@@ -9,43 +9,29 @@
 
 dumu_dir=/data/dumu/barth/7TShare/Data/3_studies/7Tea
 rdm_dir=/winmounts/uqtshaw/data.cai.uq.edu.au/SEVENTEA-Q0757/7Tea_backup_from_DUMU/
-#transfer all files across to RDM unless a file 
-
 
 #find all the folders that have IMA files in them
-
-find ${dumu_dir} -name '*.IMA' -printf '%h\n' | sort -u
-
-
+#find ${dumu_dir} -name '*.IMA' -printf '%h\n' | sort -u
 #loop over the directories by making it into an array
+
 i=0
 while read line
 do
     array[ $i ]="$line"        
     (( i++ ))
-done < <(ls -ls)
+done < <(find ${dumu_dir} -name '*.IMA' -printf '%h\n' | sort -u)
 
-echo ${array[1]}
-
-
-
-for directoryname in `find ${dumu_dir}/* -maxdepth 1 -type d ` ;do
-    cd ${directoryname}
-    myarray=(`find ./ -maxdepth 1 -name "*.IMA"`)
-    if [ ${#myarray[@]} -gt 0 ]; then
-	echo ${x}
-    fi
-    cd ../
+#loop through the array $i number of times and tar each folder as you do it. 
+j=0
+while ((j < $i)) ;do
+    tar cvzf ${array[$j]}.tar.gz -C ${j} .
+    cd ${dumu_dir}
+    let j++
 done
 
+#send the whole directory to UQRDM but excluding all the directories in the array
+tar  --exclude-tag-under="*IMA"
+
+#rm all the tar files in the dumu dir to save space
 
 
-tar -czvf my_directory.tar.gz -C my_directory .
-The -C my_directory tells tar to change the current directory to my_directory, and then . means "add the entire current directory" (including hidden files and sub-directories).
-
-
-
-
-
-find / -type f -name "*IMA" -exec tar -rf archive.tar '{}' \;
-find $dumu_directory -type f -name "*.in"
