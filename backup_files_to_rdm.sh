@@ -8,7 +8,11 @@
 #then the archived folders are deleted. 
 #USE FULL PATH 
 dumu_dir=/data/dumu/barth/7TShare/Data/3_studies/7Tea
-rdm_dir=/winmounts/uqtshaw/data.cai.uq.edu.au/SEVENTEA-Q0757/7Tea_backup_from_DUMU/
+rdm_dir=/data/fastertemp/uqtshaw/7Tea_backup_from_DUMU/
+
+if [[ ! -d  ${rdm_dir} ]] ; then
+    mkdir ${rdm_dir}
+fi
 
 #find all the folders that have IMA files in them
 #rm $dumu_dir/filenames_to_archive.txt
@@ -32,13 +36,13 @@ while ((j < $i)) ; do
     cd $dumu_dir
     echo "The directory to tar is called ${array[$j]}"
     cd "${array[$j]}"
-    var=${array[$j]}
+    var="${array[$j]}"
     folder=""
     folder=`echo "${var##*/}"`
     cd "${var%/*}"
     echo "I am now a level above the last dir in $PWD"
-    echo "The folder below I am now archiving is called" $folder "..."
-    tar cfz "${folder}.tar.gz" ${folder}/*
+    echo "The folder below I am now archiving is called $folder ..."
+    tar cvfz "${folder}".tar.gz "${folder}"/*
     echo "done"
     (( j++ ))
 done
@@ -50,11 +54,11 @@ for x in "${array[@]}"; do
 done
 
 cd $dumu_dir 
-tar -czvf $rdm_dir/transferred_from_dumu.tar.gz "${exclude_options[@]}" ./
-
+tar -czvf $rdm_dir/transferred_from_dumu.tar.gz "${exclude_options[@]}" ./*
+echo "the exclude options are ${exclude_options[@]}"
 #rm all the tar files in the dumu dir to save space
 
 for y in "${array[@]}"; do
-    rm -r ${y}.tar.gz  
+    rm -r "${y}".tar.gz
 done
 
